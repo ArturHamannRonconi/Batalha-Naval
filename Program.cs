@@ -22,22 +22,14 @@ namespace BatalhaNaval
                     Coluna = value;
             }
         }
-        public NavioMaisProximo navioMaisProximo; 
+        public bool hasNavio = false;
+        public string Warning { get; set; }
         
-        public Casa(byte linha, byte coluna, NavioMaisProximo navioMaisProximo)
+        public Casa(byte linha, byte coluna)
         {
             this.Linha = linha;
             this.Coluna = coluna;
-            this.navioMaisProximo = navioMaisProximo;
         }
-    }
-    enum NavioMaisProximo
-    {
-        AQUI,
-        UMA_CASA,
-        DUAS_CASAS,
-        TRES_CASAS,
-        QUATRO_OU_MAIS_CASAS
     }
     
     class Tabuleiro
@@ -58,10 +50,7 @@ namespace BatalhaNaval
             {
                 for(byte coluna = 0; coluna < casas.GetLength(1); coluna++)
                 {
-                    casas[linha, coluna] = new Casa(
-                        linha, coluna, 
-                        NavioMaisProximo.QUATRO_OU_MAIS_CASAS
-                    );
+                    casas[linha, coluna] = new Casa(linha, coluna);
                 }
             }
         }
@@ -75,27 +64,27 @@ namespace BatalhaNaval
                 Console.Write($"Digite a linha para o navio {navio}: ");
                 var linha = byte.Parse(Console.ReadLine());
 
-                casas[linha, coluna] = new Casa(linha, coluna, NavioMaisProximo.AQUI);
+                casas[linha, coluna].hasNavio = true;
             }
         }
         private void procurarNaviosProximos()
         {
             foreach (var casa in casas)
             {
-                if(casa.navioMaisProximo != NavioMaisProximo.AQUI)
+                if(!casa.hasNavio)
                 {
                     var NavioComUmaCasaProxima = hasNavioProximo(casa, 1);
                     var NavioComDuasCasasProxima = hasNavioProximo(casa, 2);
                     var NavioComTresCasasProxima = hasNavioProximo(casa, 3);
 
                     if(NavioComUmaCasaProxima)
-                        casa.navioMaisProximo = NavioMaisProximo.UMA_CASA;
+                        casa.Warning = "Errou por 1!";
                     else if(NavioComDuasCasasProxima)
-                        casa.navioMaisProximo = NavioMaisProximo.DUAS_CASAS;
+                        casa.Warning = "Errou por 2!";
                     else if(NavioComTresCasasProxima)
-                        casa.navioMaisProximo = NavioMaisProximo.TRES_CASAS;
+                        casa.Warning = "Errou por 3!";
                     else
-                        casa.navioMaisProximo = NavioMaisProximo.QUATRO_OU_MAIS_CASAS;
+                        casa.Warning = "Errou por muitas!";
                 }
             }            
         }
@@ -103,14 +92,14 @@ namespace BatalhaNaval
         {
             // Não consegui continuar com o clean code, o código verifica se a há navios na distancia pedida ao redor da casa enviada.
             return 
-                (hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && casas[casa.Linha, casa.Coluna + distanciaProxima].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && casas[casa.Linha, casa.Coluna - distanciaProxima].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna - distanciaProxima].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna + distanciaProxima].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna - distanciaProxima].navioMaisProximo == NavioMaisProximo.AQUI) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna + distanciaProxima].navioMaisProximo == NavioMaisProximo.AQUI);
+                (hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && casas[casa.Linha, casa.Coluna + distanciaProxima].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && casas[casa.Linha, casa.Coluna - distanciaProxima].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna - distanciaProxima].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna + distanciaProxima].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna - distanciaProxima].hasNavio) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna + distanciaProxima].hasNavio);
         }
         private bool hasCasaProxima(byte coordenada)
         {
@@ -190,7 +179,6 @@ namespace BatalhaNaval
             Console.Clear();
             Console.WriteLine($"|O jogador {jogador.Nome} deve escolher as coordenadas para seus navios|");
             jogador.tabuleiro.arrumarTabuleiro();
-        
         }
         private void plantarBombas(Jogador jogador01, Jogador jogador02)
         {
@@ -217,22 +205,15 @@ namespace BatalhaNaval
         {
             var navioInimigoMaisProximo = jogador02
                 .tabuleiro
-                .casas[bomba.linha, bomba.coluna]
-                .navioMaisProximo;
+                .casas[bomba.linha, bomba.coluna];
 
-            if(navioInimigoMaisProximo == NavioMaisProximo.AQUI) {
-                jogador01.adicionarCemPontos();
-            } else if(navioInimigoMaisProximo == NavioMaisProximo.UMA_CASA){
-                Console.WriteLine("Errou por 1!");
-            } else if(navioInimigoMaisProximo == NavioMaisProximo.DUAS_CASAS) {
-                jogador02.adicionarSetentaPontos();
-                Console.WriteLine("Errou por 2!");
-            } else if(navioInimigoMaisProximo == NavioMaisProximo.TRES_CASAS) {
-                jogador02.adicionarSetentaPontos();
-                Console.WriteLine("Errou por 3!");
+            if(navioInimigoMaisProximo.hasNavio) {
+                Console.WriteLine($"Acertou um návio +100 pontos para o jogador {jogador01.Nome}");
+                jogador01.adicionarCemPontos(); 
             } else {
                 jogador02.adicionarSetentaPontos();
-                Console.WriteLine("Errou por muitas!");
+                Console.WriteLine(navioInimigoMaisProximo.Warning);
+                Console.WriteLine($"Errou +70 pontos para o jogador {jogador02.Nome}");
             }
         }      
         private Jogador calcularPontuacaoVencedor(Jogador jogador01, Jogador jogador02)
