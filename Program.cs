@@ -4,24 +4,8 @@ namespace BatalhaNaval
 {
     class Casa
     {
-        public byte Linha
-        {
-            get => Linha;
-            set
-            {
-                if(value <= 10)
-                    Linha = value;
-            }
-        }
-        public byte Coluna
-        {
-            get => Coluna;
-            set
-            {
-                if(value <= 10)
-                    Coluna = value;
-            }
-        }
+        public byte Linha;
+        public byte Coluna;
         public bool hasNavio = false;
         public string Warning { get; set; }
         
@@ -43,7 +27,6 @@ namespace BatalhaNaval
             setNavios();
             procurarNaviosProximos();
         }
-
         private void setLinhasColunas()
         {
             for(byte linha = 0; linha < casas.GetLength(0); linha++)
@@ -92,14 +75,14 @@ namespace BatalhaNaval
         {
             // Não consegui continuar com o clean code, o código verifica se a há navios na distancia pedida ao redor da casa enviada.
             return 
-                (hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && casas[casa.Linha, casa.Coluna + distanciaProxima].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && casas[casa.Linha, casa.Coluna - distanciaProxima].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna - distanciaProxima].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna + distanciaProxima].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) && casas[casa.Linha + distanciaProxima, casa.Coluna - distanciaProxima].hasNavio) ||
-                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) && casas[casa.Linha - distanciaProxima, casa.Coluna + distanciaProxima].hasNavio);
+                (hasCasaProxima((byte) (casa.Linha + distanciaProxima)) ? casas[casa.Linha + distanciaProxima, casa.Coluna].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Linha - distanciaProxima)) ? casas[casa.Linha - distanciaProxima, casa.Coluna].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) ? casas[casa.Linha, casa.Coluna + distanciaProxima].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) ? casas[casa.Linha, casa.Coluna - distanciaProxima].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) ? casas[casa.Linha - distanciaProxima, casa.Coluna - distanciaProxima].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) ? casas[casa.Linha + distanciaProxima, casa.Coluna + distanciaProxima].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Coluna - distanciaProxima)) && hasCasaProxima((byte) (casa.Linha + distanciaProxima)) ? casas[casa.Linha + distanciaProxima, casa.Coluna - distanciaProxima].hasNavio : false) ||
+                (hasCasaProxima((byte) (casa.Coluna + distanciaProxima)) && hasCasaProxima((byte) (casa.Linha - distanciaProxima)) ? casas[casa.Linha - distanciaProxima, casa.Coluna + distanciaProxima].hasNavio : false);
         }
         private bool hasCasaProxima(byte coordenada)
         {
@@ -176,7 +159,7 @@ namespace BatalhaNaval
 
         private void arrumarTabuleiros(Jogador jogador)
         {
-            Console.Clear();
+            // Console.Clear();
             Console.WriteLine($"|O jogador {jogador.Nome} deve escolher as coordenadas para seus navios|");
             jogador.tabuleiro.arrumarTabuleiro();
         }
