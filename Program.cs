@@ -7,8 +7,7 @@ namespace BatalhaNaval
         public byte Linha;
         public byte Coluna;
         public bool hasNavio = false;
-        public string Warning { get; set; }
-        
+        public string Warning { get; set; } 
         public Casa(byte linha, byte coluna)
         {
             this.Linha = linha;
@@ -46,6 +45,17 @@ namespace BatalhaNaval
 
                 Console.Write($"Digite a linha para o navio {navio}: ");
                 var linha = byte.Parse(Console.ReadLine());
+
+                var linhaOuColunaInvalida = coluna < 0
+                    || coluna > 9
+                    || linha < 0
+                    || linha > 9;
+
+                if(linhaOuColunaInvalida) {
+                    --navio;
+                    Console.WriteLine("Linha ou coluna invalido(s), digite novamente!");
+                    continue;
+                }
 
                 casas[linha, coluna].hasNavio = true;
             }
@@ -159,7 +169,7 @@ namespace BatalhaNaval
 
         private void arrumarTabuleiros(Jogador jogador)
         {
-            // Console.Clear();
+            Console.Clear();
             Console.WriteLine($"|O jogador {jogador.Nome} deve escolher as coordenadas para seus navios|");
             jogador.tabuleiro.arrumarTabuleiro();
         }
